@@ -83,6 +83,11 @@ class Matrix:
     # SHAPE OF THE MATRIX/ ORDER OF THE MATRIX:
     def shape(self):
         return (len(self.viewMatrix),len(self.transpose().viewMatrix))
+
+    # COUNT TOTAL ELEMENTS IN THE MATRIX:
+    def totalElements(self):
+        row,col=self.shape()
+        return row*col
     
     # REPRESENTATION OF THE MATRIX IN THE TERMINAL:
     def __str__(self):
@@ -203,8 +208,3 @@ class Matrix:
         if row != col:
             return False
         return abs(self.det()) > tol
-
-    # COUNT TOTAL ELEMENTS IN THE MATRIX:
-    def totalElements(self):
-        row,col=self.shape()
-        return row*col
