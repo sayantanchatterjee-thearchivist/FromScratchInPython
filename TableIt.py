@@ -201,5 +201,5 @@ def tabulate(data,
     if(title==None):
         return table
     else:
-        table=(title.center(sum(colWidths)+(padding*len(colWidths))+(len(colWidths)+3)))+"\n"+table
+        table=(title.center(sum(colWidths)+(padding*len(colWidths))+len(colWidths)))+"\n"+table
     return table
