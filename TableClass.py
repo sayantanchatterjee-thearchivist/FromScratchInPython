@@ -267,26 +267,3 @@ class Table:
 
             title_butt=BxD["bottom-left"]+(BxD["horizontal"].join([BxD["horizontal"]*(width) for width in colWidths]))+BxD["bottom-right"]
             return "\n".join([title_cap,main_title,title_butt,header_cap,header,header_butt,table_body,table_butt])
-
-
-# TESTING THE CLASS:
-smartphone_data = [
-    ["Brand", "Model", "Storage", "Price"],
-    ["Apple", "iPhone 17 Pro", "256GB", "$999"],
-    ["Samsung", "Galaxy S26 Ultra", "512GB", "$1,299"],
-    ["Google", "Pixel 10 Pro", "256GB", "$949"],
-    ["OnePlus", "14 Ultra", "512GB", "$899"]
-]
-
-t_tech = Table(smartphone_data, title="Top Flagship Smartphones", padding=1, justify="center")
-print(t_tech)
-planet_data = [
-    ["Planet", "Type", "Radius (km)", "Moons"],
-    ["Mercury", "Terrestrial", "2,440", "0"],
-    ["Venus", "Terrestrial", "6,051", "0"],
-    ["Earth", "Terrestrial", "6,371", "1"],
-    ["Mars", "Terrestrial", "3,389", "2"]
-]
-
-t_space = Table(planet_data, title="Inner Solar System", padding=1, justify="center")
-print(t_space)
