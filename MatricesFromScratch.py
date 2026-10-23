@@ -138,10 +138,10 @@ class Matrix:
         pass
 
     def getRow(self, row_num):
-        pass
+        return Matrix([self.viewMatrix[row_num]])
 
     def getCol(self, col_num):
-        pass
+        return Matrix([self.transpose().viewMatrix[col_num]]).transpose()
 
     def det(self):
         pass
@@ -159,22 +159,73 @@ class Matrix:
         pass
 
     def isSquare(self):
-        pass
+        row,col=self.shape()
+        return row==col
 
     def isRectangular(self):
-        pass
+        row,col=self.shape()
+        return row!=col
 
     def isDiagonal(self):
-        pass
-
+        row,col=self.shape()
+        if(row==col):
+            for i in range(row):
+                for j in range(col):
+                    if i!=j and self[i,j]==0:
+                        continue
+                    else:
+                        return False
+        else:
+            return False
+    
     def isScalar(self):
-        pass
+        row,col=self.shape()
+        if(row==col):
+            value=self[0,0]
+            validity=0
+            for i in range(row):
+                for j in range(col):
+                    if (i!=j and self[i,j]==0):
+                        continue
+                    elif(i==j and self[i,j]==value):
+                        validity+=1
+                    else:
+                        return False
+            if validity==row:
+                return True
+        else:
+            return False
+            
 
     def isIdentity(self):
-        pass
+        row,col=self.shape()
+        if(row==col):
+            value=self[0,0]
+            validity=0
+            for i in range(row):
+                for j in range(col):
+                    if (i!=j and self[i,j]==0):
+                        continue
+                    elif(i==j and self[i,j]==1):
+                        validity+=1
+                    else:
+                        return False
+            if validity==row:
+                return True
+        else:
+            return False
 
     def isNull(self):
-        pass
+        check=self.totalElements()
+        validity=0
+        for row in self.viewMatrix:
+            for col in row:
+                if col==0:
+                    validity+=1
+        if validity==check:
+            return True
+        else:
+            return False
 
     def isSingular(self):
         pass
@@ -192,10 +243,10 @@ class Matrix:
         pass
 
     def isRowVector(self):
-        pass
+        return self.shape()[0]==1
 
     def isColumnVector(self):
-        pass
+        return self.shape()[1]==1
 
     def isSymmetric(self):
         pass
@@ -216,32 +267,58 @@ class Matrix:
         pass
 
     def trace(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Trace is undefined for rectangular matrices.")
+        else:
+            return sum([self[i,i] for i in range(row)])
 
     def rank(self):
         pass
 
     @classmethod
-    def diagonalMatrix(cls):
-        pass
+    def diagonalMatrix(cls,diagonal):
+        if isinstance(diagonal,list):
+            for element in diagonal:
+                if not isinstance(element,(int,float)):
+                    raise TypeError("Elements must be numbers (integers or floats).")
+                else:
+                    shape=len(diagonal)
+                    return Matrix([[diagonal[i] if i==j else 0 for j in range(shape)] for i in range(shape)])
+        else:
+            raise TypeError("Must be a 1D Python list.")
 
     @classmethod
-    def scalarMatrix(cls):
-        pass
+    def scalarMatrix(cls,scalar,n):
+        if isinstance(scalar,(int,float)) and isinstance(n,int) and n>0:
+            return Matrix([[scalar if i==j else 0 for j in range(n)] for i in range(n)])
+        else:
+            raise TypeError("Scalar must be an integer or a float, and order must be a natural number.")
 
     @classmethod
-    def identityMatrix(cls):
-        pass
+    def identityMatrix(cls,n):
+        if isinstance(n,int) and n>0:
+            return Matrix([[1 if i==j else 0 for j in range(n)] for i in range(n)])
+        else:
+            raise TypeError("Order must be a natural number.")
 
     @classmethod
-    def constant(cls):
-        pass
+    def constant(cls,scalar,n):
+        if isinstance(scalar,(int,float)) and isinstance(n,int) and n>0:
+            return Matrix([[scalar for j in range(n)] for i in range(n)])
+        else:
+            raise TypeError("Scalar must be an integer or a float, and order must be a natural number.")
 
     @classmethod
-    def zeros(cls):
-        pass
-    nullMatrix=zeros
+    def zeros(cls,n):
+        if isinstance(n,int) and n>0:
+            return Matrix([[0 for j in range(n)] for i in range(n)])
+        else:
+            raise TypeError("Order must be a natural number.")
 
     @classmethod
-    def ones(cls):
-        pass
+    def ones(cls,n):
+        if isinstance(n,int) and n>0:
+            return Matrix([[1 for j in range(n)] for i in range(n)])
+        else:
+            raise TypeError("Order must be a natural number.")
