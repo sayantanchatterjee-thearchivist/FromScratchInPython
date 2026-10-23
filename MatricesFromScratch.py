@@ -1,210 +1,145 @@
 class Matrix:
+    # INITIALIZATION OF THE MATRIX OBJECT AS A STRICT 2D PYTHON LIST OF INTEGERS AND FLOATS.
     def __init__(self, array2D):
-        self.viewMatrix=array2D
-    
-    # ACCESSING INDIVIDUAL ELEMENTS USING THE SUBSCRIPT OPERATOR:
+        if not isinstance(array2D, list) or not array2D:
+            raise ValueError("Must be a non-empty 2D Python list.")
+        
+        row_length = len(array2D[0])
+        
+        for row in array2D:
+            if not isinstance(row, list):
+                raise ValueError("Must be a 2D Python list.")
+            if len(row) != row_length:
+                raise ValueError("All rows must have the same length (must be a uniform matrix).")
+                
+            for col in row:
+                if not isinstance(col, (int, float)):
+                    raise ValueError("Must be a 2D Python List of int or float objects.")
+                    
+        self.viewMatrix=[list(row) for row in array2D]
 
-    def __getitem__(self, key):
-        if isinstance(key, tuple):
-            row, col=key
-            if isinstance(row,int) and isinstance(col,int):
-                return self.viewMatrix[row][col]
-            elif isinstance(row, slice) and isinstance(col, slice):
-                return Matrix(Matrix(self.viewMatrix[row]).transpose().viewMatrix[col]).transpose()
-        elif isinstance(key, slice):
-            return Matrix(self.viewMatrix[key])
-        else:
-            raise ValueError("Requires two arguments")
+    # STRING REPRESENTATION OF THE MATRIX OBJECT:
+    def __str__(self):
+        colWidths=[max([len(row) for row in map(str,col)]) for col in zip(*self.viewMatrix)]
 
-    # OVERWRITING AN ELEMENT:
-    def __setitem__(self, key, value):
-        if isinstance(key, tuple):
-            row, col=key
-            self.viewMatrix[row][col]=value
-        else:
-            raise ValueError("Requires two arguments")
+        fixed=[[str(col).rjust(width) for width,col in zip(colWidths,row)] for row in self.viewMatrix]
+        final_look="\n".join(["["+("  ".join([col for col in row]))+"]" for row in fixed])
+        return final_look
 
-    # TRANSPOSING THE [EXISTING MATRIX]:
-    def transposeMe(self):
-        # *list---UNPACKS THE LIST, ZIP FUNCTION THEN ZIPS THE CORRSPONDING ELEMENTS OF ALL THE ROWS WITHIN INTO TUPLES, list(col) THEN FINALLY CONVERTS THE TUPLE INTO A LIST.
-        temp=[list(col) for col in zip(*self.viewMatrix)]
-        self.viewMatrix.clear()
-        self.viewMatrix.extend(temp)
-        return self
-    
+    # TRANSPOSING A MATRIX RETURNS A COMPLETELY NEW TRANSPOSED (INTERCHANGING ROWS AND COLUMNS Ri <---> Ci) MATRIX.
     def transpose(self):
-
-        # *list---UNPACKS THE LIST, ZIP FUNCTION THEN ZIPS THE CORRSPONDING ELEMENTS OF ALL THE ROWS WITHIN INTO TUPLES, list(col) THEN FINALLY CONVERTS THE TUPLE INTO A LIST.
         return Matrix([list(col) for col in zip(*self.viewMatrix)])
-    # INTRODUCING A ROW TO THE [EXISTING MATRIX]:
 
-    def appendRow(self, row):
-
-        self.viewMatrix.append(row)
-        return self
-    # INTRODUCING A COL TO THE [EXISTING MATRIX]:
-    def appendCol(self, col):
-
-        self.transposeMe()
-        self.viewMatrix.append(col)
-        self.transposeMe()
-        return self
-    # DELETING A ROW FROM THE [EXISTING MATRIX]:
-    def popRow(self, row):
-
-
-        self.viewMatrix.pop(row)
-        return self
-    # DELETING A COL FROM THE [EXISTING MATRIX]:
-    def popCol(self, col):
-
-        self.transposeMe()
-        self.viewMatrix.pop(col)
-        self.transposeMe()
-        return self
-
-    # NEW OBJECT WITH DELETED ROW AND COL:
-    def _get_submatrix(self, row,col):
-
-        sub_mat=[]
-        current_row=0
-        for row_index,row_element in enumerate(self.viewMatrix):
-            if(row_index!=row):
-                sub_mat.append([])
-                for col_index,col_element in enumerate(row_element):
-                    if(col_index!=col):
-                        sub_mat[current_row].append(col_element)
-                    else:
-                        continue
-                current_row+=1
-        return Matrix(sub_mat)
-
-
-    # SHAPE OF THE MATRIX/ ORDER OF THE MATRIX:
+    # THE SHAPE METHOD RETURNS THE ORDER OF THE MATRIX STORED IN A TUPLE AS: (row,col)
     def shape(self):
-        return (len(self.viewMatrix),len(self.transpose().viewMatrix))
+        return (len(self.viewMatrix),len(self.viewMatrix[0]))
 
-    # COUNT TOTAL ELEMENTS IN THE MATRIX:
+    # RETURNS THE TOTAL NUMBER OF ENTRIES IN THE MATRIX OBJECT.
     def totalElements(self):
         row,col=self.shape()
         return row*col
-    
-    # REPRESENTATION OF THE MATRIX IN THE TERMINAL:
-    def __str__(self):
-        return "\n".join(map(str,self.viewMatrix))
 
-    # [OPERATORS]: (+) addition, (-) subtraction, (*) multiplication, (**) power, (@) matrix multiplication:
+    # LETS THE USER ACCESS ANY ELEMENT OF THE MATRIX OBJECT. A[i,j]--> Returns the number at the i-th row and j-th column.
+    def __getitem__(self, key):
+        if not isinstance(key, tuple):
+            raise TypeError("Requires two arguments.")
+        else:
+            row,col=key
+            return self.viewMatrix[row][col]
 
-    # ADDITION (+):
+    # LETS THE USER OVERWRITE THE VALUE AT THE i-th ROW AND j-th COLUMN, BY REASSIGNING AFTER ACCESSING. 
+    # A[i,j]=value
+    def __setitem__(self, key, value):
+        if not isinstance(key, tuple):
+            raise TypeError("Index key must be a tuple: (row, col).")
+        if not isinstance(value, (int, float)):
+            raise TypeError("Only int or float values can be assigned.")
+
+        row, col = key
+        self.viewMatrix[row][col] = value
+
+    # OPERATORS: ADDITION (+), SUBTRACTION (-), MULTIPLICATION (*)--FOR SCALAR AS WELL AS HADAMARD PRODUCT (MULTIPLYING CORRESPONDING ELEMENTS OF TWO MATRICES OF THE SAME ORDER.), MATRIX MULTIPLICATION (@), POWER(**).
+
+    # ADDITION (+): A+B=C, BOTH A AND B MUST BE A MATRIX OBJECT OF THE SAME ORDER/SHAPE.
     def __add__(self, other):
-        return Matrix([[x+y for x,y in zip(rowSelf,rowOther)] for rowSelf,rowOther in zip(self.viewMatrix,other.viewMatrix)])
+        if not isinstance(other, Matrix):
+            raise TypeError("Must be a Matrix object.")
+        elif self.shape()!=other.shape():
+            raise ValueError("Shape mismatch. Both Matrices must be of the same order.")
+        else:
+            return Matrix([[x+y for x,y in zip(rowSelf,rowOther)] for rowSelf,rowOther in zip(self.viewMatrix,other.viewMatrix)])
 
-    # SUBTRACTION (+):
+    # SUBTRACTION (-): A-B=C, BOTH A AND B MUST BE A MATRIX OBJECT OF THE SAME ORDER/SHAPE.
     def __sub__(self, other):
-        return Matrix([[x-y for x,y in zip(rowSelf,rowOther)] for rowSelf,rowOther in zip(self.viewMatrix,other.viewMatrix)])
+        if not isinstance(other, Matrix):
+            raise TypeError("Must be a Matrix object.")
+        elif self.shape()!=other.shape():
+            raise ValueError("Shape mismatch. Both Matrices must be of the same order.")
+        else:
+            return Matrix([[x-y for x,y in zip(rowSelf,rowOther)] for rowSelf,rowOther in zip(self.viewMatrix,other.viewMatrix)])
 
-    # MULTIPLICATION (*):
+    # MULTIPLICATION (*): CAN BE USED FOR STANDARD SCALAR MULTIPLICATION OR FOR HADARMARD PRODUCT. FOR HADAMARD PRODUCT BOTH MATRICES MUST BE OF THE SAME ORDER OR SHAPE.
     def __mul__(self, other):
-        # IF SCALAR:
-        if (isinstance(other,int) or isinstance(other,float)):
-            return Matrix([[element*other for element in row] for row in self.viewMatrix])
-        # IF MATRIX:
-        elif (isinstance(other,Matrix)):
-            return Matrix([[self_element*other_element for self_element,other_element in zip(self_row,other_row)] for self_row,other_row in zip(self.viewMatrix,other.viewMatrix)])
+        if isinstance(other, int) or isinstance(other, float):
+            return Matrix([[x*other for x in row] for row in self.viewMatrix])
+        elif isinstance(other,Matrix):
+            if self.shape()==other.shape():
+                return Matrix([[x*y for x,y in zip(rowSelf,rowOther)] for rowSelf,rowOther in zip(self.viewMatrix,other.viewMatrix)])
+            else:
+                raise ValueError("Shape mismatch. Both Matrices must be of the same order.")
+        else:
+            raise ValueError("Cannot perform multiplication. Only for scalar multiplication or hadamard product")
+
     def __rmul__(self, other):
-        # IF SCALAR:
-        if (isinstance(other,int) or isinstance(other,float)):
-            return Matrix([[element*other for element in row] for row in self.viewMatrix])
-        # IF MATRIX:
-        elif (isinstance(other,Matrix)):
-            return Matrix([[self_element*other_element for self_element,other_element in zip(self_row,other_row)] for self_row,other_row in zip(self.viewMatrix,other.viewMatrix)])
+        if isinstance(other, int) or isinstance(other, float):
+            return Matrix([[x*other for x in row] for row in self.viewMatrix])
+        else:
+            raise ValueError("Cannot perform multiplication. Only for scalar multiplication.")
 
-    # MATRIX MULTIPLICATION (@):
+    # STANDARD MATRIX MULTIPLICATION: A@B=C. THE TOTAL NUMBER OF COLUMNS IN A MUST BE EQUAL TO THE TOTAL NUMBER OF ROWS IN B. THE RESULTING MATRIX C IS OF ORDER: (row_of_A,col_of_B)
     def __matmul__(self, other):
-        if isinstance(other, Matrix):
-            return Matrix([[sum([x*y for x,y in zip(row,col)]) for col in other.transpose().viewMatrix] for row in self.viewMatrix])
+        if isinstance(other,Matrix):
+            if self.shape()[1]==other.shape()[0]:
+                return Matrix([[sum([x*y for x,y in zip(row,col)]) for col in other.transpose().viewMatrix] for row in self.viewMatrix])
+            else:
+                raise ValueError("The matrices are non-conformable, since the total number of columns in the first one is not equal to the total number of rows in the second matrix.")
         else:
-            raise TypeError("Cannot multiply to a non-matrix")
+            raise TypeError("Matmul requires both matrices to be a Matrix object.")
 
-    # POWER (**):
+    # POWER (**): REPEATED MULTIPLICATION OF MATRIX.
     def __pow__(self, other):
-
-        if isinstance(other,int):
-            row, col=self.shape()
-            matrix=Matrix([[(1 if (i==j) else 0) for j in range(col)] for i in range(row)])
-            for n in range(other):
-                matrix=self@matrix
-            return matrix
+        if not isinstance(other,int):
+            raise TypeError("Power can be whole numbers only.")
+        elif self.shape()[0]!=self.shape()[1]:
+            raise ValueError("Must be a square matrix.")
+        elif other<0:
+            raise ValueError("Cannot raise to negative values. Must be a whole number/non-negative Integer: {0,1,2,3,...}")
         else:
-            raise TypeError("Must be an integer value")
+            row,col=self.shape()
+            identity_matrix=Matrix([[1 if index_row==index_col else 0 for index_col in range(col)] for index_row in range(row)])
+            if other==0:
+                return identity_matrix
+            for _ in range(other):
+                identity_matrix=identity_matrix@self
+            return identity_matrix
 
-    # EQUALITY COMPARISON OPERATOR:
-    def __eq__(self,other):
-        return (True if self.viewMatrix==other.viewMatrix else False)
-    
-    # MINOR OF AN ELEMENT AT (row, col):
-    def minor(self, row, col=None):
+    def getSubmatrix(self, excluded_row, excluded_col):
+        pass
 
-        if col is None and isinstance(row, tuple):
-            row, col = row
-        return self._get_submatrix(row, col).det()
+    def getRow(self, row_num):
+        pass
 
-    # COFACTOR OF AN ELEMENT AT (row, col):
-    def cofactor(self, row, col):
-        return ((-1) ** (row + col)) * self.minor(row, col)
+    def getCol(self, col_num):
+        pass
 
-    # DETERMINANT OF A MATRIX:
     def det(self):
+        pass
 
-        rows, cols = self.shape()
-        if rows != cols:
-            raise ValueError("Determinant is only defined for square matrices.")
-        
-        if rows == 1:
-            return self.viewMatrix[0][0]
-        if rows == 2:
-            return self.viewMatrix[0][0] * self.viewMatrix[1][1] - self.viewMatrix[0][1] * self.viewMatrix[1][0]
-        
-        determinant = 0
-        for j in range(cols):
-            sign = 1 if j % 2 == 0 else -1
-            determinant += sign * self.viewMatrix[0][j] * self._get_submatrix(0, j).det()
-            
-        return determinant
+    def minor(self, element_row, element_col):
+        pass
 
-    # ADJOINT OF A MATRIX:
+    def cofactor(self, element_row, element_col):
+        pass
+
     def adjoint(self):
-        rows, cols = self.shape()
-        if rows != cols:
-            raise ValueError("Adjoint is only defined for square matrices.")
-        if rows == 1:
-            return Matrix([[1]])
-        cofactor_mat = []
-        for i in range(rows):
-            cofactor_row = []
-            for j in range(cols):
-                cofactor_row.append(self.cofactor(i, j))
-            cofactor_mat.append(cofactor_row)
-        return Matrix(cofactor_mat).transpose()
-
-    # INVERSE OF A MATRIX:
-    def inverse(self):
-        return ((1/self.det())*(self.adjoint()))
-
-    
-    # IS CHECKS:
-    # CHECK ORTHOGONAL:
-    def isOrthogonal(self):
-        row,col=self.shape()
-        return (self.transpose()@self==Matrix([[(1 if (i==j) else 0) for j in range(col)] for i in range(row)]))
-
-    # CHECK SINGULAR:
-    def isSingular(self):
-        return True if self.det()==0 else False
-
-    # CHECK INVERTIBLE:
-    def isInvertible(self, tol=1e-9):
-        row, col = self.shape()
-        if row != col:
-            return False
-        return abs(self.det()) > tol
+        pass
