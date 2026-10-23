@@ -123,6 +123,17 @@ class Matrix:
                 identity_matrix=identity_matrix@self
             return identity_matrix
 
+    # MULTIPLYING A by THE SCALAR -1:
+    def __neg__(self):
+        return self*(-1)
+
+    # CHECKING EQUALITY OF TWO MATRICES:
+    def __eq__(self, other):
+        if not isinstance(other,Matrix):
+            raise ValueError("Cannot be checked for equality against a non-Matrix object.")
+        else:
+            return self.viewMatrix==other.viewMatrix
+
     def getSubmatrix(self, excluded_row, excluded_col):
         pass
 
