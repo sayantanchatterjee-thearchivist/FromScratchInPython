@@ -143,3 +143,69 @@ class Matrix:
 
     def adjoint(self):
         pass
+
+    def inverse(self):
+        pass
+
+    def isSquare(self):
+        pass
+
+    def isRectangular(self):
+        pass
+
+    def isDiagonal(self):
+        pass
+
+    def isScalar(self):
+        pass
+
+    def isIdentity(self):
+        pass
+
+    def isNull(self):
+        pass
+
+    def isSingular(self):
+        pass
+
+    def isOrthogonal(self):
+        pass
+
+    def isUpperTriangular(self):
+        pass
+
+    def isLowerTriangular(self):
+        pass
+
+    def isTriangular(self):
+        pass
+
+    def isRowVector(self):
+        pass
+
+    def isColumnVector(self):
+        pass
+
+    def isSymmetric(self):
+        pass
+
+    def isSkewSymmetric(self):
+        pass
+
+    def isIdempotent(self):
+        pass
+
+    def isInvolutary(self):
+        pass
+
+    def isNilpotent(self):
+        pass
+
+    def isNormal(self):
+        pass
+
+    def trace(self):
+        pass
+
+    def rank(self):
+        pass
