@@ -206,7 +206,7 @@ class Matrix:
     def isIdempotent(self):
         pass
 
-    def isInvolutary(self):
+    def isInvolutory(self):
         pass
 
     def isNilpotent(self):
@@ -219,4 +219,29 @@ class Matrix:
         pass
 
     def rank(self):
+        pass
+
+    @classmethod
+    def diagonalMatrix(cls):
+        pass
+
+    @classmethod
+    def scalarMatrix(cls):
+        pass
+
+    @classmethod
+    def identityMatrix(cls):
+        pass
+
+    @classmethod
+    def constant(cls):
+        pass
+
+    @classmethod
+    def zeros(cls):
+        pass
+    nullMatrix=zeros
+
+    @classmethod
+    def ones(cls):
         pass
