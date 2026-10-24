@@ -135,7 +135,17 @@ class Matrix:
             return self.viewMatrix==other.viewMatrix
 
     def getSubmatrix(self, excluded_row, excluded_col):
-        pass
+        subMat=[[]]
+        current_row=0
+        for index_row,row_element in enumerate(self.viewMatrix):
+            if index_row!=excluded_row:
+                for index_col,col_element in enumerate(row_element):
+                    if index_col!=excluded_col:
+                        subMat[current_row].append(col_element)
+                current_row+=1
+                subMat.append([])
+        subMat.pop()
+        return Matrix(subMat)
 
     def getRow(self, row_num):
         return Matrix([self.viewMatrix[row_num]])
@@ -144,19 +154,48 @@ class Matrix:
         return Matrix([self.transpose().viewMatrix[col_num]]).transpose()
 
     def det(self):
-        pass
+        row,col=self.shape()
+        if(row!=col):
+            raise ValueError("Determinant is defined for square matrices only.")
+        else:
+            if(row==1):
+                return self[0,0]
+            elif(row==2):
+                return (self[0,0]*self[1,1])-(self[0,1]*self[1,0])
+            else:
+                Det=0
+                for j in range(col):
+                    sign=(-1)**j
+                    minor=self.getSubmatrix(0,j)
+                    Det+=self[0,j]*(sign*(minor.det()))
+                return Det   
 
     def minor(self, element_row, element_col):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            return self.getSubmatrix(element_row,element_col).det()
 
     def cofactor(self, element_row, element_col):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            return (self.getSubmatrix(element_row,element_col).det())*((-1)**(element_row+element_col))
 
     def adjoint(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            _cofacMat=[[self.cofactor(i,j) for j in range(col)] for i in range(row)]
+            return Matrix(_cofacMat).transpose()
 
     def inverse(self):
-        pass
+        _detCal=self.det()
+        _adjCal=self.adjoint()
+        return (1/_detCal)*_adjCal
 
     def isSquare(self):
         row,col=self.shape()
@@ -171,10 +210,12 @@ class Matrix:
         if(row==col):
             for i in range(row):
                 for j in range(col):
-                    if i!=j and self[i,j]==0:
-                        continue
-                    else:
-                        return False
+                    if i!=j:
+                        if self[i,j]==0:
+                            continue
+                        else:
+                            return False
+            return True
         else:
             return False
     
@@ -196,7 +237,6 @@ class Matrix:
         else:
             return False
             
-
     def isIdentity(self):
         row,col=self.shape()
         if(row==col):
