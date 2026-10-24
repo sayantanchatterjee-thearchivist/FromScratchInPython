@@ -193,9 +193,12 @@ class Matrix:
             return Matrix(_cofacMat).transpose()
 
     def inverse(self):
-        _detCal=self.det()
-        _adjCal=self.adjoint()
-        return (1/_detCal)*_adjCal
+        if self.det()==0:
+            raise ValueError("A singular matrix does not have an inverse.")
+        else:
+            _detCal=self.det()
+            _adjCal=self.adjoint()
+            return (1/_detCal)*_adjCal
 
     def isSquare(self):
         row,col=self.shape()
@@ -305,7 +308,7 @@ class Matrix:
         if self.isUpperTriangular() or self.isLowerTriangular():
             return True
         else:
-            False
+            return False
 
     def isRowVector(self):
         return self.shape()[0]==1
@@ -350,6 +353,7 @@ class Matrix:
             while(k<=row):
                 if self**k==Matrix.identityMatrix(row):
                     return True
+                k+=1
             return False
 
     def trace(self):
