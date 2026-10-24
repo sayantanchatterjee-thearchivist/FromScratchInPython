@@ -268,19 +268,44 @@ class Matrix:
             return False
 
     def isSingular(self):
-        pass
+        return self.det()==0
 
     def isOrthogonal(self):
-        pass
+        return self@self.transpose()==self.transpose()@self
 
     def isUpperTriangular(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            for i in range(row):
+                for j in range(col):
+                    if i>j:
+                        if self[i,j]==0:
+                            continue
+                        else:
+                            return False
+            return True
 
     def isLowerTriangular(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            for i in range(row):
+                for j in range(col):
+                    if i<j:
+                        if self[i,j]==0:
+                            continue
+                        else:
+                            return False
+            return True
 
     def isTriangular(self):
-        pass
+        if self.isUpperTriangular() or self.isLowerTriangular():
+            return True
+        else:
+            False
 
     def isRowVector(self):
         return self.shape()[0]==1
@@ -289,22 +314,43 @@ class Matrix:
         return self.shape()[1]==1
 
     def isSymmetric(self):
-        pass
+        row,col=self.shape()
+        if row==col:
+            return self.transpose()==self
+        else:
+            raise ValueError("Must be a square matrix.")
 
     def isSkewSymmetric(self):
-        pass
+        row,col=self.shape()
+        if row==col:
+            return self.transpose()==-self
+        else:
+            raise ValueError("Must be a square matrix.")
 
     def isIdempotent(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            return self**2==self
 
     def isInvolutory(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            return self**2==Matrix.identityMatrix(row)
 
     def isNilpotent(self):
-        pass
-
-    def isNormal(self):
-        pass
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            k=1
+            while(k<=row):
+                if self**k==Matrix.identityMatrix(row):
+                    return True
+            return False
 
     def trace(self):
         row,col=self.shape()
