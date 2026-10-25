@@ -103,12 +103,14 @@ class Matrix:
         else:
             return Matrix([[x/scalar for x in row] for row in self.viewMatrix])
 
+    # RETURNS A REMAINDER MATRIX AFTER DETERMINING THE MODULUS AGAINST A SCALAR VALUE.
     def __mod__(self, scalar):
         if not isinstance(scalar, (int,float)):
             raise TypeError("Must be a scalar.")
         else:
             return Matrix([[x%scalar for x in row] for row in self.viewMatrix])
-    
+
+    # RETURNS A MATRIX OF FLOOR DIVIDED NUMBERS AGAINST A SCALAR.
     def __floordiv__(self, scalar):
         if not isinstance(scalar, (int,float)):
             raise TypeError("Must be a scalar.")
@@ -153,6 +155,7 @@ class Matrix:
         else:
             return self.viewMatrix==other.viewMatrix
 
+    # DELETES THE SPECIFIED ROW AND COLUMN AND RETURNS THE NEW SUB MATRIX
     def getSubmatrix(self, excluded_row, excluded_col):
         subMat=[[]]
         current_row=0
@@ -166,12 +169,15 @@ class Matrix:
         subMat.pop()
         return Matrix(subMat)
 
+    # RETURNS THE ROW MATRIX OF THE SPECIFIED ROW OF THE MATRIX
     def getRow(self, row_num):
         return Matrix([self.viewMatrix[row_num]])
 
+    # RETURNS THE COL MATRIX OF THE SPECIFIED COL OF THE MATRIX
     def getCol(self, col_num):
         return Matrix([self.transpose().viewMatrix[col_num]]).transpose()
 
+    # RETURNS THE DETERMINANT VALUE AS PER THE LAPLACIAN RECURSIVE DEFINITION USING COFACTORS.
     def det(self):
         row,col=self.shape()
         if(row!=col):
@@ -187,8 +193,9 @@ class Matrix:
                     sign=(-1)**j
                     minor=self.getSubmatrix(0,j)
                     Det+=self[0,j]*(sign*(minor.det()))
-                return Det   
+                return Det
 
+    # RETURNS THE MINOR OF AN ELEMENT IN THE MATRIX
     def minor(self, element_row, element_col):
         row,col=self.shape()
         if row!=col:
@@ -196,6 +203,7 @@ class Matrix:
         else:
             return self.getSubmatrix(element_row,element_col).det()
 
+    # RETURNS THE COFACTOR OF AN ELEMENT IN THE MATRIX
     def cofactor(self, element_row, element_col):
         row,col=self.shape()
         if row!=col:
@@ -203,6 +211,7 @@ class Matrix:
         else:
             return (self.getSubmatrix(element_row,element_col).det())*((-1)**(element_row+element_col))
 
+    # RETURNS ADJOINT OF THE MATIX
     def adjoint(self):
         row,col=self.shape()
         if row!=col:
@@ -211,6 +220,7 @@ class Matrix:
             _cofacMat=[[self.cofactor(i,j) for j in range(col)] for i in range(row)]
             return Matrix(_cofacMat).transpose()
 
+    # RETURNS THE INVERSE OF THE MATRIX
     def inverse(self):
         if self.det()==0:
             raise ValueError("A singular matrix does not have an inverse.")
@@ -219,6 +229,84 @@ class Matrix:
             _adjCal=self.adjoint()
             return (1/_detCal)*_adjCal
 
+    # ---------------------------------------------------------
+    # ADVANCED LINEAR ALGEBRA & DECOMPOSITIONS
+    # ---------------------------------------------------------
+
+    # Computes the rank of the matrix using row reduction (Gaussian elimination).
+    def rank(self):
+        pass
+
+    # Computes the Frobenius norm of the matrix (square root of the sum of absolute squares of all elements).
+    def norm(self):
+        pass
+
+    # Computes the Moore-Penrose pseudoinverse of the matrix using SVD or least squares.
+    def pseudoinverse(self):
+        pass
+
+    # Performs LU decomposition, returning Lower (L) and Upper (U) triangular matrices such that A = L @ U.
+    def lu_decomposition(self):
+        pass
+
+    # Performs QR decomposition, factoring the matrix into an orthogonal matrix Q and an upper triangular matrix R.
+    def qr_decomposition(self):
+        pass
+
+    # Computes the eigenvalues of a square matrix.
+    def eigenvalues(self):
+        pass
+
+    # Computes the eigenvectors of a square matrix.
+    def eigenvectors(self):
+        pass
+
+
+    # ---------------------------------------------------------
+    # PYTHON MAGIC / DUNDER METHODS
+    # ---------------------------------------------------------
+
+    # Allows iterating through the rows of the matrix using a standard for loop (for row in matrix).
+    def __iter__(self):
+        pass
+
+    # Checks if a specific numeric value exists anywhere in the matrix (value in matrix).
+    def __contains__(self, value):
+        pass
+
+    # Returns the number of rows in the matrix when calling len(matrix).
+    def __len__(self):
+        pass
+
+    # Returns True if the matrix is non-empty and has non-zero dimensions.
+    def __bool__(self):
+        pass
+
+
+    # ---------------------------------------------------------
+    # UTILITY & DATA TRANSFORMATION METHODS
+    # ---------------------------------------------------------
+
+    # Returns a deep copy of the underlying 2D Python list representation of the matrix.
+    def tolist(self):
+        pass
+
+    # Flattens the 2D matrix into a 1D Python list of all elements.
+    def flatten(self):
+        pass
+
+    # Reshapes the matrix to new dimensions (new_rows, new_cols), ensuring total element count remains constant.
+    def reshape(self, new_rows, new_cols):
+        pass
+
+    # Applies a given function element-wise across every entry in the matrix and returns a new Matrix.
+    def apply(self, func):
+        pass
+
+    # Converts the custom Matrix object into a NumPy ndarray if NumPy is installed.
+    def to_numpy(self):
+        pass
+    
     def isSquare(self):
         row,col=self.shape()
         return row==col
