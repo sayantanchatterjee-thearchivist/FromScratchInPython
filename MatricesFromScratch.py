@@ -96,6 +96,25 @@ class Matrix:
         else:
             raise ValueError("Cannot perform multiplication. Only for scalar multiplication.")
 
+    # SCALAR DIVISION (/): ONLY FOR DIVIDING MATRICES BY SCALAR VALUES, IT IS EFFECTIVELY THE SAME AS M*(1/scalar)
+    def __truediv__(self, scalar):
+        if not isinstance(scalar, (int,float)):
+            raise TypeError("Must be a scalar.")
+        else:
+            return Matrix([[x/scalar for x in row] for row in self.viewMatrix])
+
+    def __divmod__(self, scalar):
+        if not isinstance(scalar, (int,float)):
+            raise TypeError("Must be a scalar.")
+        else:
+            return Matrix([[x%scalar for x in row] for row in self.viewMatrix])
+    
+    def __floordiv__(self, scalar):
+        if not isinstance(scalar, (int,float)):
+            raise TypeError("Must be a scalar.")
+        else:
+            return Matrix([[x//scalar for x in row] for row in self.viewMatrix])
+        
     # STANDARD MATRIX MULTIPLICATION: A@B=C. THE TOTAL NUMBER OF COLUMNS IN A MUST BE EQUAL TO THE TOTAL NUMBER OF ROWS IN B. THE RESULTING MATRIX C IS OF ORDER: (row_of_A,col_of_B)
     def __matmul__(self, other):
         if isinstance(other,Matrix):
@@ -271,10 +290,17 @@ class Matrix:
             return False
 
     def isSingular(self):
-        return self.det()==0
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
+            return self.det()==0
+
+    def isNormal(self):
+        return self@self.transpose()==self.transpose()@self
 
     def isOrthogonal(self):
-        return self@self.transpose()==self.transpose()@self
+        return self@self.transpose()==Matrix.identityMatrix(self.shape()[0])
 
     def isUpperTriangular(self):
         row,col=self.shape()
@@ -351,7 +377,7 @@ class Matrix:
         else:
             k=1
             while(k<=row):
-                if self**k==Matrix.identityMatrix(row):
+                if self**k==Matrix.zeros(row):
                     return True
                 k+=1
             return False
