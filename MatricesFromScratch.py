@@ -297,6 +297,9 @@ class Matrix:
             return self.det()==0
 
     def isNormal(self):
+        row,col=self.shape()
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
         return self@self.transpose()==self.transpose()@self
 
     def isOrthogonal(self):
