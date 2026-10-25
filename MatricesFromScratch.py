@@ -103,7 +103,7 @@ class Matrix:
         else:
             return Matrix([[x/scalar for x in row] for row in self.viewMatrix])
 
-    def __divmod__(self, scalar):
+    def __mod__(self, scalar):
         if not isinstance(scalar, (int,float)):
             raise TypeError("Must be a scalar.")
         else:
@@ -149,7 +149,7 @@ class Matrix:
     # CHECKING EQUALITY OF TWO MATRICES:
     def __eq__(self, other):
         if not isinstance(other,Matrix):
-            raise ValueError("Cannot be checked for equality against a non-Matrix object.")
+            return False
         else:
             return self.viewMatrix==other.viewMatrix
 
@@ -229,17 +229,17 @@ class Matrix:
 
     def isDiagonal(self):
         row,col=self.shape()
-        if(row==col):
+        if row!=col:
+            raise ValueError("Must be a square matrix.")
+        else:
             for i in range(row):
                 for j in range(col):
-                    if i!=j:
+                    if(i!=j):
                         if self[i,j]==0:
                             continue
                         else:
                             return False
             return True
-        else:
-            return False
     
     def isScalar(self):
         row,col=self.shape()
@@ -395,12 +395,10 @@ class Matrix:
     @classmethod
     def diagonalMatrix(cls,diagonal):
         if isinstance(diagonal,list):
-            for element in diagonal:
-                if not isinstance(element,(int,float)):
-                    raise TypeError("Elements must be numbers (integers or floats).")
-                else:
-                    shape=len(diagonal)
-                    return Matrix([[diagonal[i] if i==j else 0 for j in range(shape)] for i in range(shape)])
+            if all(map(lambda x: isinstance(x,(int,float)),diagonal)):
+                return Matrix([[diagonal[i] if i==j else 0 for j in range(len(diagonal))] for i in range(len(diagonal))])
+            else:
+                raise TypeError("Diagonal elements must be int or floats.")
         else:
             raise TypeError("Must be a 1D Python list.")
 
