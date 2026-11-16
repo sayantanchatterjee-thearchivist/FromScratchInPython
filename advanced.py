@@ -36,7 +36,7 @@ for loadedJSON,fileName in zip(loadedJSONs,fileNames):
                     header.append(category)
 
         table=[header,*([infoBlock[category] if category in infoBlock else "N/A" for category in header] for infoBlock in loadedJSON)]
-        TABLE_OBJ=TableClass.Table(table, padding=5, title=fileName.split(".")[0], style="curved")
+        TABLE_OBJ=TableClass.Table(table, padding=5, title=fileName.rsplit(".",1)[0], style="curved")
         print(TABLE_OBJ)
             
     else:
