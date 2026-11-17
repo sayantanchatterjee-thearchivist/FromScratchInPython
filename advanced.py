@@ -35,7 +35,7 @@ for loadedJSON,fileName in zip(loadedJSONs,fileNames):
                 if category not in header:
                     header.append(category)
 
-        table=[header,*([infoBlock[category] if category in infoBlock else "N/A" for category in header] for infoBlock in loadedJSON)]
+        table=[header,*(infoBlock.get(category,"N/A") for category in header] for infoBlock in loadedJSON)]
         TABLE_OBJ=TableClass.Table(table, padding=5, title=fileName.rsplit(".",1)[0], style="curved")
         print(TABLE_OBJ)
         header.clear()
