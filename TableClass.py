@@ -189,6 +189,7 @@ class Table:
             self.weight=weight
             self.style=style
             self.justify=justify
+# strict check for ascii values with .isascii()
 
     # ACCESSING ELEMENTS:
     def __getitem__(self, key):
